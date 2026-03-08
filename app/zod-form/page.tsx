@@ -25,6 +25,14 @@ const formSchema = z.object({
     .min(1, "メールアドレスは必須です")
     .email("正しいメール形式で入力してください"),
 
+      // zod スキーマに追加
+phone: z
+.string()
+.regex(/^[0-9]{10,11}$/, "10〜11桁の数字で入力してください")
+.optional()         // 任意入力
+.or(z.literal("")), // 空文字も OK にする
+
+
   // 名前
   // - 文字列であること
   // - 1文字以上（空文字禁止）
@@ -33,6 +41,7 @@ const formSchema = z.object({
     .string()
     .min(1, "お名前は必須です")
     .max(50, "50文字以内で入力してください"),
+
 
   // 種別
   // - 許可された値のみ（enum）
@@ -121,6 +130,29 @@ export default function ZodForm() {
             {errors.email && (
               <p className="text-red-500 text-xs mt-1">
                 {errors.email.message}
+              </p>
+            )}
+          </div>
+
+           {/* 電話番号 */}
+           <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              電話番号 <span className="text-red-500">*</span>
+            </label>
+            {/* type="text" にしている理由:
+                type="email" にすると、ブラウザのチェックと zod のチェックが
+                両方走ってしまう。zod に任せるために text にする */}
+            <input
+              type="text"
+              {...register("phone")}
+              className={`shadow border rounded w-full py-2 px-3 text-gray-700${
+                errors.email ? "border-red-500" : ""
+              }`}
+              placeholder="09012345678"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.phone.message}
               </p>
             )}
           </div>
